@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import dynamic from "next/dynamic";
 import { resizeImage } from '@/utils/image.util'
 import {
   TextField,
@@ -11,13 +12,26 @@ import {
   CircularProgress,
   Grid,
   Card,
-  CardMedia
+  CardMedia,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
 } from '@mui/material'
+import { TITLE_REQUEST_LIST } from "@/constants";
+
+const LazyMap = dynamic(() => import("@/components/MapView"), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
 
 export default function RequestPage() {
   const [loading, setLoading] = useState(false)
   const [response, setResponse] = useState(null)
-  const [imageList, setImageList] = useState([]) // เก็บไฟล์และ preview URL
+  const [title, setTitle] = useState('')
+  const [imageList, setImageList] = useState([])
+  const [location, setLocation] = useState({})
+  const [error, setError] = useState(null)
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files)
@@ -40,15 +54,10 @@ export default function RequestPage() {
     e.preventDefault()
     setLoading(true)
 
-    // const lat = parseFloat(e.target.lat.value)
-    // const lng = parseFloat(e.target.lng.value)
-
     const formData = new FormData()
-    formData.append('title', e.target.title.value)
-    // formData.append('lat', lat)
-    formData.append('lat', '7.00836')
-    // formData.append('lng', lng)
-    formData.append('lng', '100.47668')
+    formData.append('title', title)
+    formData.append('lat', location.lat.toFixed(6))
+    formData.append('lng', location.lng.toFixed(6))
     formData.append('detail', e.target.detail.value)
     imageList.forEach((img) => formData.append('imgList', img.file)) // append หลายไฟล์
 
@@ -66,16 +75,68 @@ export default function RequestPage() {
     setImageList([])
   }
 
+  useEffect(() => {
+    const handleMessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+
+        if (data.type === 'LOCATION') {
+          setLocation(data.payload)
+          setError(null)
+        }
+
+        if (data.type === 'ERROR') {
+          setError(data.message)
+        }
+      } catch (err) {
+        console.error('Invalid message:', err)
+      }
+    }
+
+    window.addEventListener('message', handleMessage)
+
+    window.ReactNativeWebView?.postMessage(
+      JSON.stringify({ type: 'REQUEST_LOCATION' })
+    )
+
+    return () => {
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [])
+
   return (
     <Container maxWidth='sm' sx={{ mt: 3, px: 2, width: '100%', minWidth: 0 }}>
+      {location ? (
+        <div className='text-lg'>
+          <p>Lat: {location.lat?.toFixed(6)}</p>
+          <p>Lng: {location.lng?.toFixed(6)}</p>
+
+          <div style={{ height: '360px', width: '100%' }}>
+            <LazyMap position={[location.lat?.toFixed(6), location.lng?.toFixed(6)]} />
+            {/*<LazyMap position={[7.00836, 100.47668]} />*/}
+          </div>
+        </div>
+      ) : (
+        !error && <p>กำลังขอตำแหน่งจากแอป...</p>
+      )}
+
       <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        <TextField
-          label='Title'
-          name='title'
-          required
-          fullWidth
-          size='small'
-        />
+        <FormControl required fullWidth >
+          <InputLabel id="demo-simple-select-required-label">หัวข้อ</InputLabel>
+          <Select
+            labelId="demo-simple-select-required-label"
+            id="demo-simple-select-required"
+            label="หัวข้อ"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          >
+            { TITLE_REQUEST_LIST.map((title, index) => (
+              <MenuItem key={`title-${index}`} value={title}>
+                {title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         {/*TODO: get ตำแหน่ง */}
         <TextField
           label='รายละเอียด'

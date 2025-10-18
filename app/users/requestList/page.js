@@ -55,7 +55,7 @@ export default function HelpRequestList() {
         <Typography sx={{ textAlign: 'center' }}>ยังไม่มีคำขอ</Typography>
       ) : (
         <Grid container spacing={1} direction="row" sx={{
-          justifyContent: "center",
+          justifyContent: "start",
           alignItems: "stretch",
         }}>
           {requestList.map((req) => {
