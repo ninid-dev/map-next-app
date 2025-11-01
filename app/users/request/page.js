@@ -71,14 +71,25 @@ export default function RequestPage() {
     formData.append('detail', e.target.detail.value)
     imageList.forEach((img) => formData.append('imgList', img.file)) // append หลายไฟล์
 
-    const res = await fetch('/api/v1/requests', {
-      method: 'POST',
-      body: formData
-    })
+    try {
+      const res = await fetch('/api/v1/requests', {
+        method: 'POST',
+        body: formData
+      })
 
-    const data = await res.json()
-    setResponse(data)
-    setLoading(false)
+      const data = await res.json()
+      console.log('data', data)
+      setResponse(data)
+      setLoading(false)
+
+      if (res.ok) {
+        window.ReactNativeWebView?.postMessage(
+          JSON.stringify({type: 'NAVIGATE_REQUEST_LIST'})
+        )
+      }
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   const onClearButtonClick = () => {
