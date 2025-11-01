@@ -131,8 +131,8 @@ export default function RequestPage() {
             onChange={(e) => setTitle(e.target.value)}
           >
             { TITLE_REQUEST_LIST.map((title, index) => (
-              <MenuItem key={`title-${index}`} value={title}>
-                {title}
+              <MenuItem key={`title-${index}`} value={title.value}>
+                {title.label}
               </MenuItem>
             ))}
           </Select>

@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import Loading from "@/components/Loading";
+import {TITLE_REQUEST_LIST} from "@/constants";
 
 export default function HelpRequestList() {
   const [requestList, setRequestList] = useState([])
@@ -79,7 +80,8 @@ export default function HelpRequestList() {
 
                   <CardContent sx={{ p: 1 }}>
                     <Typography variant='subtitle1' sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
-                      {req.title}
+                      {/*{req.title}*/}
+                      { TITLE_REQUEST_LIST.find((title) => title.value === req.title).label }
                     </Typography>
                     <Typography variant='body2' sx={{ fontSize: '0.85rem', mt: 0.5 }}>
                       {req.detail}
