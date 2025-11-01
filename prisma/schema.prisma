@@ -8,14 +8,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model Users {
-//   id        String    @id @default(uuid())
-//   firstName String    @map("first_name")
-//   lastName  String    @map("last_name")
-//   createdAt DateTime  @default(now())
-//   updatedAt DateTime  @updatedAt
-//   Request   Request[]
-// }
+enum Role {
+  USER
+  ADMIN
+}
+
+model Users {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  tel       String     @db.VarChar(10)
+  role      Role       @default(USER)
+  name      String?
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  Requests  Requests[]
+}
 
 enum RequestStatus {
   PENDING
@@ -33,6 +41,6 @@ model Requests {
   status    RequestStatus @default(PENDING)
   createdAt DateTime      @default(now()) @map("created_at")
   updatedAt DateTime      @updatedAt @map("updated_at")
-  // user      Users          @relation(fields: [userId], references: [id])
-  // userId    String
+  user      Users         @relation(fields: [userId], references: [id])
+  userId    String
 }
