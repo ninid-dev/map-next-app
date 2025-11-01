@@ -29,7 +29,7 @@ export async function POST (req) {
     const detail = formData.get('detail')
     const files = formData.getAll('imgList')
 
-    if (!title || !latStr || !lngStr || !detail || files.length === 0) {
+    if (!title || !latStr || !lngStr || files.length === 0) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
@@ -68,6 +68,8 @@ export async function POST (req) {
       data: newRequests
     })
   } catch (error) {
+    console.log('error', error)
+
     return NextResponse.json({
       ok: false,
       data: error

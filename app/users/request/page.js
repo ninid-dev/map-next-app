@@ -141,7 +141,6 @@ export default function RequestPage() {
         <TextField
           label='รายละเอียด'
           name='detail'
-          required
           fullWidth
           multiline
           rows={3}
