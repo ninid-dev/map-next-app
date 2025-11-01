@@ -19,6 +19,7 @@ import {
   InputLabel,
 } from '@mui/material'
 import { TITLE_REQUEST_LIST } from "@/constants";
+import {isEmpty} from "lodash";
 
 const LazyMap = dynamic(() => import("@/components/MapView"), {
   ssr: false,
@@ -32,6 +33,15 @@ export default function RequestPage() {
   const [imageList, setImageList] = useState([])
   const [location, setLocation] = useState({})
   const [error, setError] = useState(null)
+
+  const [address, setAddress] = useState('')
+  const [position, setPosition] = useState({})
+
+  const handleDataFromChild = (data) => {
+    console.log('ข้อมูลจากลูก:', data)
+    setAddress(data.address)
+    setPosition(data.position)
+  }
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files)
@@ -106,13 +116,13 @@ export default function RequestPage() {
 
   return (
     <Container maxWidth='sm' sx={{ mt: 3, px: 2, width: '100%', minWidth: 0 }}>
-      {location ? (
-        <div className='text-lg'>
-          <p>Lat: {location.lat?.toFixed(6)}</p>
-          <p>Lng: {location.lng?.toFixed(6)}</p>
+      {!isEmpty(location) ? (
+        <div className='text-lg' style={{ paddingBottom: '10px' }}>
+          {/*<p>Lat: {location.lat?.toFixed(6)}</p>*/}
+          {/*<p>Lng: {location.lng?.toFixed(6)}</p>*/}
 
           <div style={{ height: '360px', width: '100%' }}>
-            <LazyMap position={[location.lat?.toFixed(6), location.lng?.toFixed(6)]} />
+            {LazyMap && <LazyMap position={[location.lat, location.lng]} onSendData={handleDataFromChild} />}
             {/*<LazyMap position={[7.00836, 100.47668]} />*/}
           </div>
         </div>
@@ -137,7 +147,17 @@ export default function RequestPage() {
             ))}
           </Select>
         </FormControl>
-        {/*TODO: get ตำแหน่ง */}
+
+        <TextField
+          label='ที่อยู่'
+          value={address}
+          name='address'
+          fullWidth
+          size='small'
+        />
+
+        {/*{ JSON.stringify(position) }*/}
+
         <TextField
           label='รายละเอียด'
           name='detail'
