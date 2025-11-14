@@ -44,3 +44,16 @@ model Requests {
   user      Users         @relation(fields: [userId], references: [id])
   userId    String
 }
+
+model Layers {
+  id          String      @id @default(uuid())
+  titleTh     String
+  titleEn     String
+  layerTypeTh String
+  layerTypeEn String
+  layerName   String
+  nameTh      String      
+  nameEn      String      
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
