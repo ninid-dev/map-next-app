@@ -1,11 +1,3 @@
-// export const TITLE_REQUEST_LIST = [
-//   'น้ำท่วม',
-//   'ไฟไหม้',
-//   'อุบัติเหตุ',
-//   'ขอของยังชีพ',
-//   'ผู้ป่วยฉุกเฉิน',
-// ]
-
 export const TITLE_REQUEST_LIST = [
   {
     label: 'น้ำท่วม',
@@ -29,3 +21,25 @@ export const TITLE_REQUEST_LIST = [
   },
 ]
 
+export const REQUEST_STATUS = {
+  'PENDING': {
+    label: 'รอดำเนินงาน',
+    color: '#FAAD14',
+    textColor: '#EFEFEF'
+  },
+  'PROGRESS': {
+    label: 'กำลังดำเนินงาน',
+    color: '#CD6200',
+    textColor: '#EFEFEF'
+  },
+  'COMPLETED': {
+    label: 'เสร็จสิ้น',
+    color: '#52C41A',
+    textColor: '#EFEFEF'
+  },
+  'CANCEL': {
+    label: 'ยกเลิก',
+    color: '#636363',
+    textColor: '#EFEFEF'
+  },
+}
