@@ -29,6 +29,7 @@ enum RequestStatus {
   PENDING
   PROGRESS
   COMPLETED
+  CANCEL
 }
 
 model Requests {
