@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import dynamic from "next/dynamic";
 import { resizeImage } from '@/utils/image.util'
 import {
@@ -20,13 +20,17 @@ import {
 } from '@mui/material'
 import { TITLE_REQUEST_LIST } from "@/constants";
 import {isEmpty} from "lodash";
+import {useSearchParams} from "next/navigation";
 
 const LazyMap = dynamic(() => import("@/components/MapView"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
 
-export default function RequestPage() {
+function RequestPageContent() {
+  const searchParams = useSearchParams()
+  const token = searchParams.get('token')
+
   const [loading, setLoading] = useState(false)
   const [response, setResponse] = useState(null)
   const [title, setTitle] = useState('')
@@ -35,12 +39,13 @@ export default function RequestPage() {
   const [error, setError] = useState(null)
 
   const [address, setAddress] = useState('')
-  const [position, setPosition] = useState({})
+  const [position, setPosition] = useState('')
 
   const handleDataFromChild = (data) => {
     console.log('ข้อมูลจากลูก:', data)
-    setAddress(data.address)
-    setPosition(data.position)
+    // setAddress(data.address)
+    const tempPosition = Object.values(data.position)
+    setPosition(tempPosition)
   }
 
   const handleFileChange = async (e) => {
@@ -72,9 +77,12 @@ export default function RequestPage() {
     imageList.forEach((img) => formData.append('imgList', img.file)) // append หลายไฟล์
 
     try {
-      const res = await fetch('/api/v1/requests', {
+      const res = await fetch('/app/api/v1/requests', {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       })
 
       const data = await res.json()
@@ -97,6 +105,10 @@ export default function RequestPage() {
   }
 
   useEffect(() => {
+    // TODO: remove console.log
+    window.console.log = (...args) => {
+      window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'log', data: args }))
+    }
     const handleMessage = (event) => {
       try {
         const data = JSON.parse(event.data)
@@ -104,6 +116,10 @@ export default function RequestPage() {
         if (data.type === 'LOCATION') {
           setLocation(data.payload)
           setError(null)
+        }
+
+        if (data.type === 'REFRESH') {
+          window.location.reload()
         }
 
         if (data.type === 'ERROR') {
@@ -114,6 +130,7 @@ export default function RequestPage() {
       }
     }
 
+    document.addEventListener('message', handleMessage)
     window.addEventListener('message', handleMessage)
 
     window.ReactNativeWebView?.postMessage(
@@ -121,6 +138,7 @@ export default function RequestPage() {
     )
 
     return () => {
+      document.removeEventListener('message', handleMessage)
       window.removeEventListener('message', handleMessage)
     }
   }, [])
@@ -129,12 +147,8 @@ export default function RequestPage() {
     <Container maxWidth='sm' sx={{ mt: 3, px: 2, width: '100%', minWidth: 0 }}>
       {!isEmpty(location) ? (
         <div className='text-lg' style={{ paddingBottom: '10px' }}>
-          {/*<p>Lat: {location.lat?.toFixed(6)}</p>*/}
-          {/*<p>Lng: {location.lng?.toFixed(6)}</p>*/}
-
           <div style={{ height: '360px', width: '100%' }}>
             {LazyMap && <LazyMap position={[location.lat, location.lng]} onSendData={handleDataFromChild} />}
-            {/*<LazyMap position={[7.00836, 100.47668]} />*/}
           </div>
         </div>
       ) : (
@@ -160,14 +174,20 @@ export default function RequestPage() {
         </FormControl>
 
         <TextField
+          label='ตำแหน่ง'
+          value={position}
+          name='position'
+          fullWidth
+          size='small'
+        />
+
+        <TextField
           label='ที่อยู่'
           value={address}
           name='address'
           fullWidth
           size='small'
         />
-
-        {/*{ JSON.stringify(position) }*/}
 
         <TextField
           label='รายละเอียด'
@@ -235,5 +255,13 @@ export default function RequestPage() {
         </Box>
       )}
     </Container>
+  )
+}
+
+export default function RequestPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RequestPageContent />
+    </Suspense>
   )
 }
