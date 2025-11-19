@@ -13,7 +13,7 @@ function DraggableMarker(props) {
   const markerRef = useRef(null)
 
   const ICON = icon({
-    iconUrl: "/assets/marker.png",
+    iconUrl: "/app/assets/marker.png",
     iconSize: [32, 32],
   })
 
@@ -35,15 +35,15 @@ function DraggableMarker(props) {
       const lat = position[0]
       const lng = position[1]
       // TODO: เอาขึ้น prd ไม่ได้ ติด policy ตอนนี้แค่ทดลอง
-      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=th`
-
-      const res = await fetch(url)
-      const data = await res.json()
-
-      const address = data.display_name || 'ไม่พบข้อมูล'
+      // const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=th`
+      //
+      // const res = await fetch(url)
+      // const data = await res.json()
+      //
+      // const address = data.display_name || 'ไม่พบข้อมูล'
 
       onSendData({
-        address,
+        // address,
         position: {
           lat,
           lng
