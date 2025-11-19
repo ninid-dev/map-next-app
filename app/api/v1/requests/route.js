@@ -1,11 +1,20 @@
-import prisma from "@/config/prisma";
+import prisma from "@/lib/prisma";
 import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
+import {getUserFromHeaders} from "@/utils/getUserFromHeaders.util";
 
-export async function GET () {
+export async function GET (req) {
   try {
-    const requests = await prisma.requests.findMany()
+    const { userId } = getUserFromHeaders(req)
+
+    const requests = await prisma.requests.findMany({
+      where: {
+      //   // userId: userId,
+      //   // status:
+      },
+      orderBy: { createdAt: 'desc' }
+    })
 
     return NextResponse.json({
       ok: true,
@@ -21,6 +30,8 @@ export async function GET () {
 
 export async function POST (req) {
   try {
+    const { userId, role } = getUserFromHeaders(req)
+
     const formData = await req.formData()
 
     const title = formData.get('title')
@@ -59,7 +70,8 @@ export async function POST (req) {
         lat,
         lng,
         detail,
-        imgPath: uploadedFiles.join(',')
+        imgPath: uploadedFiles.join(','),
+        userId: userId
       }
     })
 
