@@ -77,7 +77,7 @@ export default function RequestDetailDialog ({
           )}
           <CardMedia
             component='img'
-            image={data.imgPath}
+            image={`/app/${data.imgPath}`}
             sx={{
               width: '100%',
               height: 'auto',
