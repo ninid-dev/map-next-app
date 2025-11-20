@@ -1,4 +1,4 @@
-import prisma from '@/config/prisma';
+import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server'
 
 export const config = {
@@ -27,7 +27,7 @@ export async function GET() {
 export async function POST(req) {
     try {
        const { titleTh, titleEn, layerTypeTh, layerTypeEn, layerName, nameTh, nameEn } = await req.json()
-       
+
         if (!titleTh || !titleEn || !layerTypeTh || !layerTypeEn || !layerName || !nameTh || !nameEn) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
         }
@@ -35,15 +35,15 @@ export async function POST(req) {
         const newLayer = await prisma.layers.create({
             data: {
                 titleTh: titleTh,
-                titleEn: titleEn, 
-                layerTypeTh: layerTypeTh, 
-                layerTypeEn: layerTypeEn, 
-                layerName: layerName, 
-                nameTh: nameTh, 
+                titleEn: titleEn,
+                layerTypeTh: layerTypeTh,
+                layerTypeEn: layerTypeEn,
+                layerName: layerName,
+                nameTh: nameTh,
                 nameEn: nameEn
             }
         })
-        
+
         return NextResponse.json({
             ok: true,
             data: newLayer
