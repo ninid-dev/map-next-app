@@ -128,13 +128,29 @@ function HelpRequestListContent() {
 
                       <CardMedia
                         component='img'
-                        image={`/app/${splitImagePath(req)[0]}`}
+                        image={`/app${splitImagePath(req)[0]}`}
                         sx={{
                           height: 130,
                           cursor: 'pointer',
-                          borderRadius: '4px'
                         }}
                       />
+
+                      {
+                        splitImagePath(req).length > 1 && (
+                          <Chip
+                            size="small"
+                            label={`+${splitImagePath(req).length - 1}`}
+                            sx={{
+                              backgroundColor: 'white',
+                              fontWeight: 'bold',
+                              position: 'absolute',
+                              bottom: 4,
+                              right: 4,
+                              zIndex: 2
+                            }}
+                          />
+                        )
+                      }
                     </Box>
                   )}
 

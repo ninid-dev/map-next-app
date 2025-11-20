@@ -19,8 +19,8 @@ export default function RequestDetailDialog ({
   if (!data) return null
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
-      <Card>
+    <Dialog open={open} onClose={onClose} fullWidth>
+      <Card sx={{ maxHeight: '80vh' }}>
         <Box sx={{ position: 'relative' }}>
           <Chip
             size="small"
@@ -77,13 +77,11 @@ export default function RequestDetailDialog ({
           )}
           <CardMedia
             component='img'
-            image={`/app/${data.imgPath}`}
+            image={`/app${data.imgPath}`}
             sx={{
               width: '100%',
-              height: 'auto',
-              display: 'block',
-              cursor: 'pointer',
-              borderRadius: '4px'
+              maxHeight: '55vh',
+              objectFit: 'cover'
             }}
           />
         </Box>
