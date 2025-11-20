@@ -137,6 +137,10 @@ function RequestPageContent() {
       JSON.stringify({ type: 'REQUEST_LOCATION' })
     )
 
+    window.ReactNativeWebView?.postMessage(
+      JSON.stringify({ type: 'REQUEST_CAMERA' })
+    )
+
     return () => {
       document.removeEventListener('message', handleMessage)
       window.removeEventListener('message', handleMessage)
