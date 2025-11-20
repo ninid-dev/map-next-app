@@ -6,6 +6,7 @@ export async function GET() {
         const today = new Date().toISOString().split("T")[0];
         const response = await axios.get(`https://fms.drr.go.th/get/flooddetail?situationDateTo=${today}&publish_only=true&nolimit=true&fordashBoard=true&addIndexPrefix=true&sortBy=all&isBacktoNormal=false`);
         const formatData = Object.values(response.data).map(val => ({
+            id: val.root_flood_detail_id_pk,
             name: 'อุทกภัย',
             province: val.province_name_political,
             cause: val.storm_name || '-',

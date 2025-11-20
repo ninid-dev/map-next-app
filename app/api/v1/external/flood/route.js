@@ -14,7 +14,9 @@ export async function GET() {
                 km_end: val.km_end,
                 start_date: val.start_date,
                 lat: val.latitude,
-                lon: val.longitude
+                lon: val.longitude,
+                case_id: val.case_id,
+                cause_of_accident: val.cause_of_accident
             }
         })
         return NextResponse.json({
